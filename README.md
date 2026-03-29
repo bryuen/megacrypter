@@ -14,7 +14,7 @@
 
 3. MySQL (optional for blacklist).
 
-### 5 steps installation instructions:
+### 5 steps installation instructions (Linux):
 
 **Step 1:** Download tarball (or clone repo) and upload to your server.
 
@@ -69,6 +69,75 @@ sudo systemctl restart apache2
 ```
 
 **Step 5:** Use [Megabasterd](https://github.com/tonikelope/megabasterd) to download files from your Megacrypter links (it supports any Megacrypter clone out of the box).
+
+### Installing on Windows
+
+You can run Megacrypter on Windows using [XAMPP](https://www.apachefriends.org/), which bundles Apache, PHP, and MySQL in a single installer. Note: the memcache PHP extension is not included in XAMPP by default and must be installed separately if needed (it is optional and only required for blacklist caching performance).
+
+**Step 1:** Download and install [XAMPP](https://www.apachefriends.org/) (select Apache, PHP, and MySQL during installation).
+
+**Step 2:** Clone or download the repository into the XAMPP `htdocs` directory. Using Git Bash or the command prompt:
+
+```cmd
+cd C:\xampp\htdocs
+git clone https://github.com/tonikelope/megacrypter.git
+cd megacrypter
+```
+
+**Step 3:** Install composer dependencies. Open a command prompt in the `megacrypter` directory:
+
+```cmd
+php composer.phar install
+```
+
+**Step 4:** Copy and rename all config sample files. In the command prompt:
+
+```cmd
+cd application\config
+copy miscellaneous.php.sample miscellaneous.php
+copy paths.php.sample paths.php
+copy memcache.php.sample memcache.php
+copy database.php.sample database.php
+copy gmail.php.sample gmail.php
+```
+
+Edit `miscellaneous.php` in a text editor and update:
+
+- **`URL_BASE`** — Set to `http://localhost` or a domain/subdomain pointing to your machine.
+- **`MASTER_KEY`** — Generate a random hex key. You can use PowerShell to generate one:
+  ```powershell
+  -join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
+  ```
+- **`GENERIC_PASSWORD`** — Set a strong random password (at least 16 characters).
+
+**Step 5:** Enable `mod_rewrite` and configure the virtual host. Open `C:\xampp\apache\conf\httpd.conf` in a text editor:
+
+- Ensure this line is **uncommented** (no `#` at the start):
+  ```
+  LoadModule rewrite_module modules/mod_rewrite.so
+  ```
+
+- Open `C:\xampp\apache\conf\extra\httpd-vhosts.conf` and add:
+  ```
+  <VirtualHost *:80>
+    ServerName localhost
+    DocumentRoot "C:/xampp/htdocs/megacrypter/public"
+    <Directory "C:/xampp/htdocs/megacrypter/public">
+      AllowOverride All
+      Require all granted
+    </Directory>
+  </VirtualHost>
+  ```
+
+**Step 6:** Ensure the required PHP extensions are enabled. Open `C:\xampp\php\php.ini` and make sure the following lines are **uncommented** (no `;` at the start):
+
+```
+extension=curl
+extension=mbstring
+extension=openssl
+```
+
+**Step 7:** Start Apache (and MySQL if using the blacklist feature) from the XAMPP Control Panel, then open `http://localhost` in your browser to verify Megacrypter is running.
 
 ### Using with Megabasterd
 
