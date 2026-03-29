@@ -10,9 +10,11 @@
 
 1. Apache (mod_rewrite ON) (Or another web server that supports URL rewrite)
 
-2. PHP >= 5.5 (cURL + memcache + mbstring)
+2. PHP >= 7.2 (cURL + mbstring + openssl). Memcache is optional (for blacklist caching).
 
 3. MySQL (optional for blacklist).
+
+> **Windows users:** Skip to [Installing on Windows](#installing-on-windows) for XAMPP-based instructions with PowerShell commands.
 
 ### 5 steps installation instructions (Linux):
 
@@ -74,37 +76,40 @@ sudo systemctl restart apache2
 
 You can run Megacrypter on Windows using [XAMPP](https://www.apachefriends.org/), which bundles Apache, PHP, and MySQL in a single installer. Note: the memcache PHP extension is not included in XAMPP by default and must be installed separately if needed (it is optional and only required for blacklist caching performance).
 
-**Step 1:** Download and install [XAMPP](https://www.apachefriends.org/) (select Apache, PHP, and MySQL during installation).
+**Step 1:** Download and install [XAMPP](https://www.apachefriends.org/) (select Apache, PHP, and MySQL during installation). Also install [Git for Windows](https://git-scm.com/download/win) if you haven't already.
 
-**Step 2:** Clone or download the repository into the XAMPP `htdocs` directory. Using Git Bash or the command prompt:
+**Step 2:** Open **PowerShell** and clone the repository into the XAMPP `htdocs` directory.
 
-```cmd
+> ⚠️ **Important:** Run each command on its own line. Do **not** combine them.
+
+```powershell
 cd C:\xampp\htdocs
 git clone https://github.com/tonikelope/megacrypter.git
 cd megacrypter
 ```
 
-**Step 3:** Install composer dependencies. Open a command prompt in the `megacrypter` directory:
+**Step 3:** Install composer dependencies (still in the `megacrypter` directory):
 
-```cmd
+```powershell
 php composer.phar install
 ```
 
-**Step 4:** Copy and rename all config sample files. In the command prompt:
+**Step 4:** Copy all config sample files. Run **each line separately**:
 
-```cmd
+```powershell
 cd application\config
-copy miscellaneous.php.sample miscellaneous.php
-copy paths.php.sample paths.php
-copy memcache.php.sample memcache.php
-copy database.php.sample database.php
-copy gmail.php.sample gmail.php
+Copy-Item miscellaneous.php.sample miscellaneous.php
+Copy-Item paths.php.sample paths.php
+Copy-Item memcache.php.sample memcache.php
+Copy-Item database.php.sample database.php
+Copy-Item gmail.php.sample gmail.php
+cd ..\..
 ```
 
-Edit `miscellaneous.php` in a text editor and update:
+Edit `application\config\miscellaneous.php` in a text editor (e.g. Notepad) and update:
 
 - **`URL_BASE`** — Set to `http://localhost` or a domain/subdomain pointing to your machine.
-- **`MASTER_KEY`** — Generate a random hex key. You can use PowerShell to generate one:
+- **`MASTER_KEY`** — Generate a random hex key. Run this in PowerShell to generate one:
   ```powershell
   -join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
   ```
