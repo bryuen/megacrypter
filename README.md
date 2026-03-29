@@ -16,13 +16,37 @@
 
 ### 5 steps installation instructions:
 
-Step 1: download tarball (or clone repo) and upload to your server.
+**Step 1:** Download tarball (or clone repo) and upload to your server.
 
-Step 2: install composer dependencies -> <code>$ php composer.phar install</code>
+```bash
+git clone https://github.com/tonikelope/megacrypter.git /var/www/megacrypter
+cd /var/www/megacrypter
+```
 
-Step 3: rename ALL /config .sample extension and edit miscellaneous.php and any other file you need.
+**Step 2:** Install composer dependencies.
 
-Step 4: prepare Apache virtual host:
+```bash
+php composer.phar install
+```
+
+**Step 3:** Rename ALL config sample files and edit them.
+
+```bash
+cd application/config
+cp miscellaneous.php.sample miscellaneous.php
+cp paths.php.sample paths.php
+cp memcache.php.sample memcache.php
+cp database.php.sample database.php
+cp gmail.php.sample gmail.php
+```
+
+At a minimum, edit `miscellaneous.php` and update:
+
+- **`URL_BASE`** — Set to the domain or subdomain where your Megacrypter will be accessible (e.g. `http://megacrypter.yourdomain.com`). A domain or subdomain is required (the API URL is fixed to the root path).
+- **`MASTER_KEY`** — Generate a random 128, 192, or 256-bit AES key in hex string format (e.g. 64 hex characters for 256-bit). This key is used to encrypt and decrypt Megacrypter links. You can generate one with: `openssl rand -hex 32`
+- **`GENERIC_PASSWORD`** — Set a strong random password (at least 16 characters recommended).
+
+**Step 4:** Prepare the Apache virtual host:
 
 ```
 <VirtualHost *:80>
@@ -36,9 +60,31 @@ Step 4: prepare Apache virtual host:
 </VirtualHost>
 ```
 
-Step 5: ask developers of your favourite download manager to recognize your new megacrypter links (or give it a try to [Megabasterd](https://github.com/tonikelope/megabasterd) that supports any MC clon)
+After adding the virtual host, enable the site and restart Apache:
 
-You're alone from here. Good luck!
+```bash
+sudo a2enmod rewrite
+sudo a2ensite megacrypter
+sudo systemctl restart apache2
+```
+
+**Step 5:** Use [Megabasterd](https://github.com/tonikelope/megabasterd) to download files from your Megacrypter links (it supports any Megacrypter clone out of the box).
+
+### Using with Megabasterd
+
+[Megabasterd](https://github.com/tonikelope/megabasterd) is a download manager that natively supports Megacrypter links. Once your Megacrypter instance is running:
+
+1. **Generate Megacrypter links** by sending a request to your Megacrypter API (see [API DOC](#api-doc) below). For example, send a POST request to `http://megacrypter.yourdomain.com/api` with:
+   ```json
+   {"m": "crypt", "links": ["https://mega.nz/file/XXXXXXXX#YYYYYYYY"]}
+   ```
+   The response will contain your Megacrypter links.
+
+2. **Open Megabasterd** and paste your Megacrypter links using the download button. Megabasterd automatically recognizes the `http(s)://megacrypter.yourdomain.com/!xxxxxxxx` link format.
+
+3. If the link is **password protected**, Megabasterd will prompt you for the password.
+
+4. Megabasterd handles decryption and downloading automatically — no additional configuration is needed beyond pasting the link.
 
 ## API DOC
 
