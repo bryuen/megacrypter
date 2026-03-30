@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="test/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="MegaCrypter Test Suite">
+            <directory>test</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>application</directory>
+        </include>
+        <exclude>
+            <directory>application/View</directory>
+            <directory>application/config</directory>
+            <directory>application/locale</directory>
+        </exclude>
+    </source>
+</phpunit>
