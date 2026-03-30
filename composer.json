@@ -12,5 +12,6 @@
       "audit": {
         "block-insecure": false
       }
-    }
+    },
+    "_comment": "block-insecure is false because twig/twig 1.x and twig/extensions 1.0.x (original deps) have security advisories; the codebase uses twig 3.x now but the config remains for CI compatibility"
 }

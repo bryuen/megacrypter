@@ -49,6 +49,17 @@ class Utils_CryptTools
         }
     }
 
+    /**
+     * Custom HMAC-CRC32 implementation.
+     * 
+     * Replaces PHP's deprecated hash_hmac('crc32', ...) which was removed in PHP 8.
+     * Implements HMAC using the CRC32 hash algorithm following RFC 2104.
+     *
+     * @param string $data Message to be authenticated
+     * @param string $key Secret key
+     * @param bool $raw_output When true, returns raw binary data; when false, returns lowercase hex string
+     * @return string HMAC-CRC32 hash
+     */
     public static function hash_hmac_crc32($data, $key, $raw_output = false) {
         $block_size = 64;
 

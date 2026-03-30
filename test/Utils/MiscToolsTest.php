@@ -81,6 +81,8 @@ class MiscToolsTest extends TestCase
         $result = Utils_MiscTools::bin2i32a($bin);
 
         $this->assertCount(1, $result);
+        // 0x01020300 = 16909056 (padded with one null byte on the right)
+        $this->assertEquals(0x01020300, $result[0]);
     }
 
     public function testI32a2UrlBase64RoundTrip()

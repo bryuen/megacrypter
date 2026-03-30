@@ -82,18 +82,15 @@ class CryptToolsTest extends TestCase
     {
         $key = openssl_random_pseudo_bytes(32);
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
-        // Simulate data that was encrypted with mcrypt (null padded)
-        // Padding must be 1-7 null bytes (the regex strips at most 7)
-        $plaintext = 'TestMcryptData!!'; // 16 bytes exactly, no padding needed
-        $padded_plaintext = $plaintext . "\0\0\0\0\0"; // 21 bytes, padded to 32 with 11 null bytes but only 5 added
-        // For a proper test: use a 13-byte string + 3 null bytes = 16 bytes
-        $plaintext2 = 'McryptCompat!'; // 13 bytes
-        $padded2 = str_pad($plaintext2, 16, "\0"); // 3 null bytes appended
+        // aesCbcDecryptMCRYPT strips 1-7 trailing null bytes (mcrypt null-padding compat)
+        // Use a 13-byte plaintext + 3 null-byte padding = 16 bytes (one block)
+        $plaintext = 'McryptCompat!'; // 13 bytes
+        $padded = str_pad($plaintext, 16, "\0"); // 3 null bytes appended
 
-        $encrypted = Utils_CryptTools::aesCbcEncrypt($padded2, $key, $iv, false);
+        $encrypted = Utils_CryptTools::aesCbcEncrypt($padded, $key, $iv, false);
         $decrypted = Utils_CryptTools::aesCbcDecryptMCRYPT($encrypted, $key, $iv);
 
-        $this->assertEquals($plaintext2, $decrypted);
+        $this->assertEquals($plaintext, $decrypted);
     }
 
     public function testAesCbcDecryptMCRYPTWithNullIv()
