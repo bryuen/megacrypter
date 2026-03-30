@@ -16,7 +16,25 @@
 
 > **Windows users:** Skip to [Installing on Windows](#installing-on-windows) for XAMPP-based instructions with PowerShell commands.
 
-### 5 steps installation instructions (Linux):
+### Automated installation (Linux — recommended):
+
+The included `install.sh` script automates the entire setup process — installing dependencies, generating secure keys, configuring Apache, and optionally setting up the MySQL blacklist database.
+
+```bash
+git clone https://github.com/tonikelope/megacrypter.git /var/www/megacrypter
+cd /var/www/megacrypter
+sudo bash install.sh
+```
+
+The installer will interactively prompt you for settings. For a fully non-interactive install (CI/CD, scripted deployments):
+
+```bash
+sudo bash install.sh --non-interactive --url-base http://megacrypter.yourdomain.com
+```
+
+Run `bash install.sh --help` to see all available options.
+
+### 5 steps manual installation instructions (Linux):
 
 **Step 1:** Download tarball (or clone repo) and upload to your server.
 
