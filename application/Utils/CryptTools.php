@@ -49,6 +49,24 @@ class Utils_CryptTools
         }
     }
 
+    public static function hash_hmac_crc32($data, $key, $raw_output = false) {
+        $block_size = 64;
+
+        if (strlen($key) > $block_size) {
+            $key = hash('crc32', $key, true);
+        }
+
+        $key = str_pad($key, $block_size, "\0");
+
+        $ipad = str_repeat("\x36", $block_size) ^ $key;
+        $opad = str_repeat("\x5c", $block_size) ^ $key;
+
+        $inner_hash = hash('crc32', $ipad . $data, true);
+        $hmac = hash('crc32', $opad . $inner_hash, $raw_output);
+
+        return $hmac;
+    }
+
     public static function decryptMegaDownloaderLinks($data) {
         
         return preg_replace_callback('/mega\:\/\/(?P<folder>f)?(?P<enc>enc\d*?)\?(?P<linkdata>[\da-z_,-]*?)(?=https?\:|mega\:|[^\da-z_,-]|$)/i', 
