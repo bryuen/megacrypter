@@ -1,10 +1,53 @@
+# 🔥 MegaCrypter
+
 ![Alt text](/public/images/lock.png?raw=true "MC logo")![Alt text](/public/images/logo.png?raw=true "MC logo")
 
-<h1 align="center"><a href="https://youtu.be/YvyG3KyOJb0">DEMO</a></h2>
+```
+                         🔥🔥🔥
+                    .::GHOST RIDER::.
+            ════════════════════════════════
+              ____  _               _   
+             / ___|| |__   ___  ___| |_ 
+            | |  _ | '_ \ / _ \/ __| __|
+            | |_| || | | | (_) \__ \ |_ 
+             \____||_| |_|\___/|___/\__|
+             ____  _     _           
+            |  _ \(_) __| | ___ _ __ 
+            | |_) | |/ _` |/ _ \ '__|
+            |  _ <| | (_| |  __/ |   
+            |_| \_\_|\__,_|\___|_|   
+            ════════════════════════════════
+           🔥  RIDE THROUGH THE CRYPTED SHADOWS  🔥
+```
 
-<h1 align="center"><a href="https://youtu.be/z9B82X_HBg4">DEMO 2 (video streaming)</a></h2>
+> *Anonymous crypted URL forwarding web application for MEGA links — forked, enhanced, and maintained by [@bryuen](https://github.com/bryuen).*
+
+<h2 align="center"><a href="https://youtu.be/YvyG3KyOJb0">🎬 DEMO</a></h2>
+
+<h2 align="center"><a href="https://youtu.be/z9B82X_HBg4">🎬 DEMO 2 (video streaming)</a></h2>
 
 ![Diagrama](https://tonikelope.github.io/megacrypter/images/diagrama.png?raw=true&t=1 "Diagrama")
+
+---
+
+## 📜 Changelog — Ghost Rider's Trail of Fire
+
+All commits on the `copilot/automate-installation-process` branch, from newest to oldest:
+
+| # | Date | Author | Commit | Description |
+|---|------|--------|--------|-------------|
+| 🔥 1 | 2026-03-30 | Copilot × bryuen | [`f78e16c`](https://github.com/bryuen/megacrypter/commit/f78e16cc31738fb50f8ed51fef24dacfc86340b8) | Revert accidental file mode changes on `public/` directory |
+| 🔥 2 | 2026-03-30 | Copilot × bryuen | [`2a3e275`](https://github.com/bryuen/megacrypter/commit/2a3e27562f32871cb1e602caaa0e43b442e2a019) | Address code review: fix DB user host, remove nginx fallback, use AllowOverride All, improve hex gen error handling |
+| 🔥 3 | 2026-03-30 | Copilot × bryuen | [`ac29044`](https://github.com/bryuen/megacrypter/commit/ac2904495e23a638506f039a8d05ae27fe00e570) | Add fully automated install script (`install.sh`) and update README — interactive + `--non-interactive` modes |
+| 🔥 4 | 2026-03-30 | bryuen | [`e2a0cbf`](https://github.com/bryuen/megacrypter/commit/e2a0cbf06972928e78b2515dd53b1ab93f6db927) | Add custom agent configuration template |
+| 🔥 5 | 2026-03-29 | Copilot × bryuen | [`e9b0f7e`](https://github.com/bryuen/megacrypter/commit/e9b0f7e5dccab991b3171871603dee7d2cfe9c96) | Fix zero-error install: update `composer.phar`, Twig 3, fix PHP 8 compat, fix tests |
+| 🔥 6 | 2026-03-29 | Copilot × bryuen | [`a745bc1`](https://github.com/bryuen/megacrypter/commit/a745bc1fbd4376ddf2993a0766fad5250a59154d) | Add Windows installation instructions to README |
+| 🔥 7 | 2026-03-29 | Copilot × bryuen | [`33737ee`](https://github.com/bryuen/megacrypter/commit/33737ee7299ea9244cb66731d5e57aa84288223a) | Improve installation instructions and add Megabasterd usage guide |
+
+> [!NOTE]
+> This branch also inherits the full upstream commit history from [tonikelope/megacrypter](https://github.com/tonikelope/megacrypter). View the [complete commit log](https://github.com/bryuen/megacrypter/commits/copilot/automate-installation-process).
+
+---
 
 ## What do you need to deploy your own Megacrypter?
 
@@ -247,7 +290,7 @@ Follow this algorithm to decrypt crypted fields:
 
 ```
 REPEAT
-        
+    
     password := read_password()
     
     info_key := hmac := hmac_sha256(password, base64_dec(SALT) + hex2bin('00000001'))
@@ -255,7 +298,7 @@ REPEAT
     FOR i=2 : 1 : pow(2, ITER_LOG2)
         
         hmac := hmac_sha256(password, hmac)
-    
+        
         info_key := info_key XOR hmac
     
     END
@@ -286,9 +329,7 @@ crypted_field := aes_cbc_dec(base64_dec(CRYPTED_FIELD), info_key, base64_dec(IV)
 {"url": "MEGA_TEMP_URL" OR "CRYPTED_MEGA_TEMP_URL",
 "pass": false OR "IV"}
 ```
-
 Note: use the same algorithm described above to decrypt temp url (if password protected)
-
 
 ### Error responses (because shit happens...)
 ```
@@ -329,3 +370,22 @@ MEGA_EREAD(-21)
 MEGA_EAPPKEY(-22)
 MEGA_EDLURL(-101)
 ```
+
+---
+
+<p align="center">
+
+```
+        🔥         🔥         🔥
+       ╔═══════════════════════════╗
+       ║  GHOST RIDER APPROVED 👻  ║
+       ║  Forked with fire by      ║
+       ║  @bryuen — 2026           ║
+       ╚═══════════════════════════╝
+            ║║║║║║║║║║║║║║║
+          🏍️💀🔥  RIDE ON  🔥💀🏍️
+```
+
+</p>
+
+> *Original project by [tonikelope](https://github.com/tonikelope/megacrypter). Ghost Rider rides eternal.*
