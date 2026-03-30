@@ -106,7 +106,16 @@ confirm() {
 # ─── Helper: generate a cryptographically secure random hex string ────────────
 gen_hex() {
     local bytes="${1:-32}"
-    openssl rand -hex "$bytes" 2>/dev/null || head -c "$bytes" /dev/urandom | od -An -tx1 | tr -d ' \n'
+    local result
+    result=$(openssl rand -hex "$bytes" 2>/dev/null) && echo "$result" && return
+    # Fallback: read from /dev/urandom and convert to hex
+    result=$(head -c "$bytes" /dev/urandom | od -An -tx1 | tr -d ' \n')
+    local expected_len=$((bytes * 2))
+    if [[ ${#result} -lt $expected_len ]]; then
+        err "Failed to generate secure random hex string."
+        exit 1
+    fi
+    echo "${result:0:$expected_len}"
 }
 
 # ─── Helper: generate a random alphanumeric password ──────────────────────────
@@ -374,8 +383,8 @@ setup_database() {
 
     $MYSQL_ROOT_CMD -e "
         CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        CREATE USER IF NOT EXISTS '${DB_USER}'@'${DB_HOST}' IDENTIFIED BY '${DB_PASS}';
-        GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'${DB_HOST}';
+        CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
+        GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';
         FLUSH PRIVILEGES;
         USE \`${DB_NAME}\`;
         CREATE TABLE IF NOT EXISTS \`blacklist\` (
@@ -463,9 +472,8 @@ configure_apache() {
     RewriteEngine On
 
     <Directory ${DOC_ROOT}>
-        AllowOverride None
+        AllowOverride All
         Require all granted
-        Include ${DOC_ROOT}/.htaccess
     </Directory>
 
     ErrorLog \${APACHE_LOG_DIR}/megacrypter-error.log
@@ -493,8 +501,6 @@ VHOSTEOF
         APACHE_USER="apache"
     elif id "http" &>/dev/null; then
         APACHE_USER="http"
-    elif id "nginx" &>/dev/null; then
-        APACHE_USER="nginx"
     fi
 
     $NEED_SUDO chown -R "$APACHE_USER:$APACHE_USER" "$INSTALL_DIR" 2>/dev/null || \
