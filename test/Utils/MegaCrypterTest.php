@@ -1,7 +1,7 @@
 <?php
 
 
-class MegaCrypterTest extends PHPUnit_Framework_TestCase
+class MegaCrypterTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetOptionalFlags()
     {
@@ -9,7 +9,7 @@ class MegaCrypterTest extends PHPUnit_Framework_TestCase
 
         $optional_flags = $this->_getOptionalFields();
 
-        $this->assertInternalType('array', $optional_flags);
+        $this->assertIsArray($optional_flags);
 
         $this->assertEquals($expected_flags, array_keys($optional_flags));
 
@@ -109,9 +109,9 @@ class MegaCrypterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('JznAr3lWn-A28Sp6CqmqnrEJymNtkgkESSwfunSRJf4', $dlink['file_key']);
         $this->assertEquals('hola', $dlink['extra_info']);
         $this->assertEquals(true, $dlink['hide_name']);
-        $this->assertInternalType('array', $dlink['pass']);
+        $this->assertIsArray($dlink['pass']);
         $this->assertEquals(2452961699, $dlink['expire']);
-        $this->assertEquals(hash_hmac('sha256', substr(Utils_MiscTools::urlBase64Decode($match['data']), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC)), GENERIC_PASSWORD, true), base64_decode($dlink['no_expire_token']));
+        $this->assertEquals(hash_hmac('sha256', substr(Utils_MiscTools::urlBase64Decode($match['data']), 0, openssl_cipher_iv_length('AES-256-CBC')), GENERIC_PASSWORD, true), base64_decode($dlink['no_expire_token']));
         $this->assertEquals('www.foo.com', $dlink['referer']);
         $this->assertEquals('foo@foo.com', $dlink['email']);
         $this->assertEquals('127.0.0.1', $dlink['zombie']);

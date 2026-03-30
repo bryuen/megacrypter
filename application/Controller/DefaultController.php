@@ -13,8 +13,8 @@ class Controller_DefaultController
 
     public function __construct(Utils_Request $request, $auto_populate_view = false) {
         $this->request = $request;
-        $this->_twig_env = new Twig_Environment(new Twig_Loader_Filesystem(DEFAULT_TWIG_TEMPLATE_DIR));
-        $this->_twig_env->addExtension(new Twig_Extensions_Extension_I18n());
+        $this->_twig_env = new \Twig\Environment(new \Twig\Loader\FilesystemLoader(DEFAULT_TWIG_TEMPLATE_DIR));
+        $this->_twig_env->addExtension(new \TwigI18nExtension());
         $this->_template_file = strtolower($request->getVar('controller')) . '.html';
         $this->_view_data = $auto_populate_view ? $this->_genViewData() : [];
     }

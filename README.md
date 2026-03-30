@@ -10,19 +10,45 @@
 
 1. Apache (mod_rewrite ON) (Or another web server that supports URL rewrite)
 
-2. PHP >= 5.5 (cURL + memcache + mbstring)
+2. PHP >= 7.2 (cURL + mbstring + openssl). Memcache is optional (for blacklist caching).
 
 3. MySQL (optional for blacklist).
 
-### 5 steps installation instructions:
+> **Windows users:** Skip to [Installing on Windows](#installing-on-windows) for XAMPP-based instructions with PowerShell commands.
 
-Step 1: download tarball (or clone repo) and upload to your server.
+### 5 steps installation instructions (Linux):
 
-Step 2: install composer dependencies -> <code>$ php composer.phar install</code>
+**Step 1:** Download tarball (or clone repo) and upload to your server.
 
-Step 3: rename ALL /config .sample extension and edit miscellaneous.php and any other file you need.
+```bash
+git clone https://github.com/tonikelope/megacrypter.git /var/www/megacrypter
+cd /var/www/megacrypter
+```
 
-Step 4: prepare Apache virtual host:
+**Step 2:** Install composer dependencies.
+
+```bash
+php composer.phar install
+```
+
+**Step 3:** Rename ALL config sample files and edit them.
+
+```bash
+cd application/config
+cp miscellaneous.php.sample miscellaneous.php
+cp paths.php.sample paths.php
+cp memcache.php.sample memcache.php
+cp database.php.sample database.php
+cp gmail.php.sample gmail.php
+```
+
+At a minimum, edit `miscellaneous.php` and update:
+
+- **`URL_BASE`** — Set to the domain or subdomain where your Megacrypter will be accessible (e.g. `http://megacrypter.yourdomain.com`). A domain or subdomain is required (the API URL is fixed to the root path).
+- **`MASTER_KEY`** — Generate a random 128, 192, or 256-bit AES key in hex string format (e.g. 64 hex characters for 256-bit). This key is used to encrypt and decrypt Megacrypter links. You can generate one with: `openssl rand -hex 32`
+- **`GENERIC_PASSWORD`** — Set a strong random password (at least 16 characters recommended).
+
+**Step 4:** Prepare the Apache virtual host:
 
 ```
 <VirtualHost *:80>
@@ -36,9 +62,103 @@ Step 4: prepare Apache virtual host:
 </VirtualHost>
 ```
 
-Step 5: ask developers of your favourite download manager to recognize your new megacrypter links (or give it a try to [Megabasterd](https://github.com/tonikelope/megabasterd) that supports any MC clon)
+After adding the virtual host, enable the site and restart Apache:
 
-You're alone from here. Good luck!
+```bash
+sudo a2enmod rewrite
+sudo a2ensite megacrypter
+sudo systemctl restart apache2
+```
+
+**Step 5:** Use [Megabasterd](https://github.com/tonikelope/megabasterd) to download files from your Megacrypter links (it supports any Megacrypter clone out of the box).
+
+### Installing on Windows
+
+You can run Megacrypter on Windows using [XAMPP](https://www.apachefriends.org/), which bundles Apache, PHP, and MySQL in a single installer. Note: the memcache PHP extension is not included in XAMPP by default and must be installed separately if needed (it is optional and only required for blacklist caching performance).
+
+**Step 1:** Download and install [XAMPP](https://www.apachefriends.org/) (select Apache, PHP, and MySQL during installation). Also install [Git for Windows](https://git-scm.com/download/win) if you haven't already.
+
+**Step 2:** Open **PowerShell** and clone the repository into the XAMPP `htdocs` directory.
+
+> ⚠️ **Important:** Run each command on its own line. Do **not** combine them.
+
+```powershell
+cd C:\xampp\htdocs
+git clone https://github.com/tonikelope/megacrypter.git
+cd megacrypter
+```
+
+**Step 3:** Install composer dependencies (still in the `megacrypter` directory):
+
+```powershell
+php composer.phar install
+```
+
+**Step 4:** Copy all config sample files. Run **each line separately**:
+
+```powershell
+cd application\config
+Copy-Item miscellaneous.php.sample miscellaneous.php
+Copy-Item paths.php.sample paths.php
+Copy-Item memcache.php.sample memcache.php
+Copy-Item database.php.sample database.php
+Copy-Item gmail.php.sample gmail.php
+cd ..\..
+```
+
+Edit `application\config\miscellaneous.php` in a text editor (e.g. Notepad) and update:
+
+- **`URL_BASE`** — Set to `http://localhost` or a domain/subdomain pointing to your machine.
+- **`MASTER_KEY`** — Generate a random hex key. Run this in PowerShell to generate one:
+  ```powershell
+  -join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
+  ```
+- **`GENERIC_PASSWORD`** — Set a strong random password (at least 16 characters).
+
+**Step 5:** Enable `mod_rewrite` and configure the virtual host. Open `C:\xampp\apache\conf\httpd.conf` in a text editor:
+
+- Ensure this line is **uncommented** (no `#` at the start):
+  ```
+  LoadModule rewrite_module modules/mod_rewrite.so
+  ```
+
+- Open `C:\xampp\apache\conf\extra\httpd-vhosts.conf` and add:
+  ```
+  <VirtualHost *:80>
+    ServerName localhost
+    DocumentRoot "C:/xampp/htdocs/megacrypter/public"
+    <Directory "C:/xampp/htdocs/megacrypter/public">
+      AllowOverride All
+      Require all granted
+    </Directory>
+  </VirtualHost>
+  ```
+
+**Step 6:** Ensure the required PHP extensions are enabled. Open `C:\xampp\php\php.ini` and make sure the following lines are **uncommented** (no `;` at the start):
+
+```
+extension=curl
+extension=mbstring
+extension=openssl
+```
+
+**Step 7:** Start Apache (and MySQL if using the blacklist feature) from the XAMPP Control Panel, then open `http://localhost` in your browser to verify Megacrypter is running.
+
+### Using with Megabasterd
+
+[Megabasterd](https://github.com/tonikelope/megabasterd) is a download manager that natively supports Megacrypter links. Once your Megacrypter instance is running:
+
+1. **Generate Megacrypter links** by sending a request to your Megacrypter API (see [API DOC](#api-doc) below). For example, send a POST request to `http://megacrypter.yourdomain.com/api` with:
+   ```json
+   {"m": "crypt", "links": ["https://mega.nz/file/XXXXXXXX#YYYYYYYY"]}
+   ```
+   The response will contain your Megacrypter links.
+
+2. **Open Megabasterd** and paste your Megacrypter links using the download button. Megabasterd automatically recognizes the `http(s)://megacrypter.yourdomain.com/!xxxxxxxx` link format.
+
+3. If the link is **password protected**, Megabasterd will prompt you for the password.
+
+4. Megabasterd handles decryption and downloading automatically — no additional configuration is needed beyond pasting the link.
 
 ## API DOC
 

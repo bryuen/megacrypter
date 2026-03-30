@@ -2,3 +2,4 @@ vendor/
 composer.lock
 application/config/*.php
 .idea/
+.phpunit.result.cache

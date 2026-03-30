@@ -1,6 +1,9 @@
 <?php
 
 require_once VENDOR_PATH . 'autoload.php';
+require_once LIB_PATH . 'TwigI18nExtension.php';
+
+set_include_path(get_include_path() . PATH_SEPARATOR . APP_PATH);
 
 function zendStyleAutoload($className) {
     $className = ltrim($className, '\\');
