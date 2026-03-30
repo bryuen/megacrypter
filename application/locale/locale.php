@@ -8,7 +8,7 @@ $LOCALES = [
 ];
 
 /* This is for Cloudflare...  */
-if(array_key_exists(($l=strtolower($_SERVER['HTTP_CF_IPCOUNTRY'])), $LOCALES)) {
+if(isset($_SERVER['HTTP_CF_IPCOUNTRY']) && array_key_exists(($l=strtolower($_SERVER['HTTP_CF_IPCOUNTRY'])), $LOCALES)) {
     
     $locale = $LOCALES[$l];
     define('HTML_LANG', $l);

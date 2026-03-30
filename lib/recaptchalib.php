@@ -135,8 +135,8 @@ function recaptcha_get_html ($pubkey, $error = null, $use_ssl = false)
  * A ReCaptchaResponse is returned from recaptcha_check_answer()
  */
 class ReCaptchaResponse {
-        var $is_valid;
-        var $error;
+        public $is_valid;
+        public $error;
 }
 
 
@@ -212,13 +212,9 @@ function _recaptcha_aes_pad($val) {
 /* Mailhide related code */
 
 function _recaptcha_aes_encrypt($val,$ky) {
-	if (! function_exists ("mcrypt_encrypt")) {
-		die ("To use reCAPTCHA Mailhide, you need to have the mcrypt php module installed.");
-	}
-	$mode=MCRYPT_MODE_CBC;   
-	$enc=MCRYPT_RIJNDAEL_128;
+	$iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 	$val=_recaptcha_aes_pad($val);
-	return mcrypt_encrypt($enc, $ky, $val, $mode, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
+	return openssl_encrypt($val, 'AES-128-CBC', $ky, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 }
 
 
